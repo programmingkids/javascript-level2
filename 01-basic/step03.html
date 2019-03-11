@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>step03</title>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" type="text/css" href="style.css">
+<script>
+var timer = null;
+var displayTag = null;
+
+// ウィンドウ読み込み完了後に「init」関数を実行します
+window.onload = init;
+
+// 現在の時刻を計算する関数
+function getDatetime() {
+  var now = new Date();
+  var year = now.getFullYear();
+  //１を加算します
+  var mon = now.getMonth()+1;
+  var day = now.getDate();
+  var hour = now.getHours();
+  var min = now.getMinutes();
+  var sec = now.getSeconds();
+  
+  // 表示スタイルを文字列で作成します
+  var dateTimeNow = year + "年" + mon + "月" + day + "日" + hour + "時" + min + "分" + sec + "秒"; 
+  return dateTimeNow;
+}
+
+function init() {
+  // 表示するタグを取得します
+  displayTag = document.getElementById('display');
+  // 1秒ごとにdraw関数を呼び出す
+  timer = setInterval(draw,1000);
+}
+
+function draw() {
+  // displayに時刻を表示します
+  displayTag.innerHTML = getDatetime();
+}
+</script>
+</head>
+<body>
+<div id="container">
+  <h1>setInterval</h1>
+  <div id="display"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>step08</title>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" type="text/css" href="style.css">
+<script>
+var canvas = null;
+var ctx = null;
+var ball = null;
+var timer = null;
+var x = 0;
+var y = 0;
+var dx = 5;
+
+// ウィンドウ読み込み完了後に「init」関数を実行します
+window.onload = init;
+
+function init() {
+  canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+  prepareImages();
+  clear();
+}
+
+function clear() {
+  // 背景色を白で塗りつぶす
+  ctx.fillStyle = 'rgb(255,255,255)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function prepareImages() {
+  // 画像の読み込み
+  ball = new Image();
+  ball.src = '../images/ball.png';
+  // 画像の読み込みが完了したら、移動を開始
+  ball.onload = startMove;
+}
+
+function startMove() {
+  timer = setInterval(draw,100);
+};
+
+function draw() {
+  clear();
+  ctx.drawImage(ball,x,y,40,40);
+  x += dx;
+}
+</script>
+</head>
+<body>
+<div id="container">
+  <h1>画像を右に移動する</h1>
+  <canvas id="canvas" width="300px" height="300px"></canvas>
+</div>
+</body>
+</html>

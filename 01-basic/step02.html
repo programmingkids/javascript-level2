@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>step02</title>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" type="text/css" href="style.css">
+<script>
+var canvas = null;
+var ctx = null;
+
+window.onload = init;
+
+function init() {
+  // startボタンを取得
+  var startButton = document.getElementById('start');
+  // startボタンをクリックした時に「draw」関数を実行する
+  startButton.onclick = draw;
+  var clearButton = document.getElementById('clear');
+  clearButton.onclick = clear;
+  
+  // canvasを取得
+  canvas = document.getElementById('canvas');
+  // canvasからコンテキストを取得
+  ctx = canvas.getContext('2d');
+  // コンテキストの背景色を「白」にする
+  clear();
+}
+
+function draw() {
+  // 丸を描く
+  ctx.beginPath();
+  ctx.arc(canvas.width/2, canvas.height/2, 60, 0, Math.PI*2, false);
+  ctx.stroke();
+}
+
+function clear() {
+  // 背景色を白で塗りつぶす
+  ctx.fillStyle = 'rgb(255,255,255)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+</script>
+</head>
+<body>
+<div id="container">
+  <h1>clickイベント</h1>
+  <canvas id="canvas" width="300px" height="300px"></canvas>
+  <div id="control">
+    <button id="start">スタート</button>
+    <button id="clear">クリア</button>
+  <div>
+</div>
+</body>
+</html>

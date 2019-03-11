@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>step05</title>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" type="text/css" href="style.css">
+<script>
+var displayTag = null;
+var startBtn = null;
+
+// ウィンドウ読み込み完了後に「init」関数を実行
+window.onload = init;
+
+function getRandom() {
+  // 0~9までの乱数を作ります
+  var random = Math.floor(10 * Math.random());
+  return random;
+}
+
+function init() {
+  displayTag = document.getElementById('display');
+  startBtn = document.getElementById('start');
+  startBtn.onclick = function() {
+    displayTag.innerHTML = getRandom();
+  };
+}
+</script>
+</head>
+<body>
+<div id="container">
+  <h1>乱数</h1>
+  <div>
+    <button id="start">乱数作成</button>
+  </div>
+  <div id="display"></div>
+</div>
+</body>
+</html>

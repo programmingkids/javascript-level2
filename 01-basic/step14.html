@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>step14</title>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" type="text/css" href="style.css">
+<script>
+var canvas = null;
+var ctx = null;
+var clearButton = null;
+// 画像を格納する配列
+var images = [];
+// 読み込む画像のファイル配列
+var files = ['A','B','C','D','E','F','G','H','I',];
+
+window.onload = init;
+
+function init() {
+  canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+  prepareImages();
+  clear();
+  clearButton = document.getElementById('clear');
+  clearButton.onclick = clear;
+  // キャンバスをクリックした時のイベント登録
+  canvas.onclick = onCanvasClicked;
+}
+
+function clear() {
+  // 背景色を白で塗りつぶす
+  ctx.fillStyle = 'rgb(255,255,255)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function prepareImages() {
+  // 画像の読み込み
+  for ( var i in files ) {
+    var image = new Image();
+    image.src = './../images/' + files[i] + '.png';
+    images.push(image);
+  }
+}
+
+function onCanvasClicked(event) {
+  var position = getClickedPosition(event);
+  var index = getClickedIndex(position);
+  draw(index);
+}
+
+function getClickedPosition(event) {
+  // キャンバスの左上からx座標
+  var xBase  = canvas.offsetLeft;
+  // キャンバスの左上からのy座標
+  var yBase  = canvas.offsetTop;
+  // キャンバス内のクリックされたのx座標
+  var x = event.pageX - xBase;
+  // キャンバス内のクリックされたのy座標
+  var y = event.pageY - yBase;
+  return {"x":x,"y":y};
+}
+
+function getClickedIndex(position) {
+  // クリックされたXとYの座標に基づいて、
+  // 9分割されたキャンバスの該当位置を判定する
+  var index = null;
+  if(position.y <= 90) {
+    if(position.x <= 90) {
+      index = 0;
+    } else if(position.x <= 180) {
+      index = 1;
+    } else {
+      index = 2;
+    }
+  } else if( position.y <= 180) {
+    if(position.x <= 90) {
+      index = 3;
+    } else if(position.x <= 180) {
+      index = 4;
+    } else {
+      index = 5;
+    }
+  } else {
+    if(position.x <= 90) {
+      index = 6;
+    } else if(position.x <= 180) {
+      index = 7;
+    } else {
+      index = 8;
+    }
+  }
+  return index;
+}
+
+function draw(index) {
+  // いったん背景色をクリアする
+  clear();
+  
+  // 画像の左上のX座標
+  var x = 0;
+  // 画像の左上のY座標
+  var y = 0;
+  // 表示する画像の幅
+  var w = 90;
+  // 表示する画像の高さ
+  var h = 90;
+  
+  // インデックスに基づき座標を計算します
+  x = Math.floor((index % 3)) * w;
+  y = Math.floor((index / 3)) * h;
+  // 該当の画像を表示します
+  ctx.drawImage(images[index],x,y,w,h);
+}
+</script>
+</head>
+<body>
+<div id="container">
+  <h1>分割画面のクリック位置に画像表</h1>
+  <canvas id="canvas" width="270px" height="270px"></canvas>
+  <div id="control">
+    <button id="clear">クリア</button>
+  <div>
+</div>
+</body>
+</html>

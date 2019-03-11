@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>step01</title>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" type="text/css" href="style.css">
+<script>
+var canvas = null;
+var ctx = null;
+
+// ウィンドウ読み込み完了後に「init」関数を実行
+window.onload = init;
+
+function init() {
+  // canvasを取得
+  canvas = document.getElementById('canvas');
+  // canvasからコンテキストを取得
+  ctx = canvas.getContext('2d');
+  // コンテキストの背景色を「白」にする
+  ctx.fillStyle = 'rgb(255,255,255)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // コンテキストに文字を描く
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "center";
+  ctx.fillStyle = "rgb(0, 0, 0)";
+  ctx.fillText("Hello Canvas", canvas.width/2, canvas.height/2);
+}
+</script>
+</head>
+<body>
+<div id="container">
+  <h1>onloadイベント</h1>
+  <canvas id="canvas" width="300px" height="300px"></canvas>
+</div>
+</body>
+</html>
