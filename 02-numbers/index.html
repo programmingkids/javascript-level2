@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>数字並び替えゲーム</title>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" type="text/css" href="style.css">
+<script>
+var canvas;
+var ctx;
+var images;
+var imagesCount = 0;
+var emptyPanelIndex = null;
+var messageTag = null;
+
+window.onload = init;
+
+function init() {
+  initContext();
+  prepareImages();
+  messageTag = document.getElementById('message');
+  
+  var start = document.getElementById('start');
+  start.onclick = startGame;
+  canvas.onclick = clickPanel;
+  var giveUp = document.getElementById('giveUp');
+  giveUp.onclick = clickGiveUp;
+}
+
+function setMessage(message) {
+  messageTag.innerHTML = message;
+}
+
+function initContext() {
+  canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'rgb(255,255,255)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function prepareImages() {
+  images = [];
+  for( var i = 0; i <=8; i++) {
+    var image = new Image();
+    image.name = i;
+    image.src = './../images/' + i + '.png';
+    images.push(image);
+    
+    if( i == 0 ) {
+      image.name = 'vacancy';
+    }
+  }
+  emptyPanelIndex = 8;
+}
+
+function shuffleImages() {
+  for(var i = images.length - 1; i > 0; i--) {
+    var r = Math.floor(Math.random() * (i + 1));
+    var tmp = images[i];
+    images[i] = images[r];
+    images[r] = tmp;
+  }
+  checkVacancy();
+}
+
+function checkVacancy() {
+  for(var i in images) {
+    if( images[i].name == 'vacancy') {
+      emptyPanelIndex = parseInt(i);
+      break;
+    }
+  }
+}
+
+function clickPanel(event) {
+  // クリックされたキャンバス内の座標を連想配列で取得
+  var position = getClickedPosition(event);
+  // 座標に基づき、クリックされたパネルのインデックスを取得
+  var clickedPanelIndex = getClickedIndex(position);
+  // クリックされたパネルと空のパネルのインデックスで移動可能かどうかをチェック
+  checkPanel(clickedPanelIndex,emptyPanelIndex);
+}
+
+function getClickedPosition(event) {
+  // キャンバスの左上からx座標
+  var xBase  = canvas.offsetLeft;
+  // キャンバスの左上からのy座標
+  var yBase  = canvas.offsetTop;
+  // キャンバス内のクリックされたのx座標
+  var x = event.pageX - xBase;
+  // キャンバス内のクリックされたのy座標
+  var y = event.pageY - yBase;
+  return {"x":x,"y":y};
+}
+
+function getClickedIndex(position) {
+  var index = null;
+  if(position.y <= 100) {
+    if(position.x <= 100) {
+      index = 0;
+    } else if(position.x <= 200) {
+      index = 1;
+    } else {
+      index = 2;
+    }
+  } else if( position.y <= 200) {
+    if(position.x <= 100) {
+      index = 3;
+    } else if(position.x <= 200) {
+      index = 4;
+    } else {
+      index = 5;
+    }
+  } else {
+    if(position.x <= 100) {
+      index = 6;
+    } else if(position.x <= 200) {
+      index = 7;
+    } else {
+      index = 8;
+    }
+  }
+  return index;
+}
+
+function startGame() {
+  // 画像をランダムに並べます
+  shuffleImages();
+  // パネルの描画をします
+  drawPanel();
+  setMessage('');
+}
+
+function drawPanel() {
+  // 描画
+  var x = 0;
+  var y = 0;
+  var w = 100;
+  var h = 100;
+  for( var i in images ) {
+    ctx.drawImage(images[i],x,y,w,h);
+    x += w;
+    if( i % 3 == 2) {
+      y += h;
+      x = 0;
+    }
+  }
+}
+
+function checkPanel(clickedPanelIndex,emptyPanelIndex) {
+  if (clickedPanelIndex == emptyPanelIndex - 3) {
+    // 空白パネルの上をクリック
+    swapPanel(clickedPanelIndex,emptyPanelIndex);
+  } else if (clickedPanelIndex == emptyPanelIndex + 3) {
+    // 空白パネルの下をクリック
+    swapPanel(clickedPanelIndex,emptyPanelIndex);
+  } else if ((clickedPanelIndex == emptyPanelIndex - 1) && ((emptyPanelIndex % 3 ) != 0)) {
+    // 空白パネルの左をクリック
+    swapPanel(clickedPanelIndex,emptyPanelIndex);
+  } else if ((clickedPanelIndex == (emptyPanelIndex + 1)) && ((emptyPanelIndex % 3 ) != 2)) {
+    // 空白パネルの右をクリック
+    swapPanel(clickedPanelIndex,emptyPanelIndex);
+  } else {
+    // 空白パネルと接していない
+  }
+}
+
+function swapPanel(clickedPanelIndex,emptyPanelIndex) {
+  // クリックされたパネルと空白パネルを入れ替えます
+  var temp = images[clickedPanelIndex];
+  images[clickedPanelIndex] = images[emptyPanelIndex];
+  images[emptyPanelIndex] = temp;
+  // パネルを再度描画します
+  drawPanel();
+  // 空白パネルのインデックスをチェックします
+  checkVacancy();
+  // ゲームが「あがり」かどうかをチェックします
+  checkComplete();
+}
+
+function checkComplete() {
+  var isComplete = true;
+  for(var i = 0; i <= 7; i++) {
+    if( parseInt(images[i].name) != i + 1 ) {
+      isComplete = false;
+      break;
+    }
+  }
+  if( isComplete ) {
+    setMessage('おめでとう');
+  }
+}
+
+function clickGiveUp() {
+  prepareImages();
+  drawPanel();
+  setMessage('残念、もう一度挑戦してみよう');
+}
+</script>
+</head>
+<body>
+<div id="container">
+  <h1>数字並びゲーム</h1>
+  <div id="message"></div>
+  <canvas id="canvas" width="300px" height="300px"></canvas>
+  <div id="control">
+    <button id="start">スタート</button>
+    <button id="giveUp">ギブアップ</button>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+html, body, div {
+    margin:0;
+    padding:0;
+}
+body {
+    background-color: #f4f2f2;
+    color: black;
+}
+#container{
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+}
+#canvas{
+
+}
+#message{
+    height: 2em;
+}
+#scoreBox{
+    margin: 10px auto;
+    width: 300px;
+    line-height: 2em;
+    overflow: hidden;
+}
+#scoreLabel{
+    float:left;
+    width:100px;
+}
+#score{
+    float:left;
+    width:150px;
+    height: 2em;
+    background-color: #fff;
+    border: 1px solid #ccc;
+}
+
+#lifeBox{
+    margin:10px auto;
+    width:300px;
+    height: 2em;
+    overflow: hidden;
+}
+#lifeLabel{
+    float: left;
+    width:100px;
+    line-height:2em;
+}
+#life{
+    width: 150px;
+}
+#life img {
+    float: left;
+    height: 2em;
+}
+#canvas{
+    cursor: pointer;
+}
