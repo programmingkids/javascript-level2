@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ラケットゲーム</title>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" type="text/css" href="style.css">
+<script>
+var canvas;
+var ctx;
+var timer;
+var messageTag = null;
+// スコア表示用タグ
+var scoreTag = null;
+// スコア
+var score = 0;
+// ゲームオーバーフラグ
+var isGameOver = false;
+// 画像
+var images = ['ball2.png','racket.png'];
+var imageContainer = {};
+
+// ボールの幅
+var BALL_WIDTH = 20;
+// ボールの高さ
+var BALL_HEIGHT = 20;
+// ラケットの幅
+var RACKET_WIDTH = 64;
+// ラケットの高さ
+var RACKET_HEIGHT = 10;
+
+// ボールの座標情報
+var ball = {};
+// ラケットの座標情報
+var racket = {};
+
+window.onload = init;
+window.onkeydown = keyDown;
+
+function init() {
+  initContext();
+  prepareImages();
+  var start = document.getElementById('start');
+  start.onclick = startGame;
+  var giveUp = document.getElementById('giveUp');
+  giveUp.onclick = clickGiveUp;
+}
+
+function initContext() {
+  canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+}
+
+function clearContext() {
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function setMessage(message) {
+  if( messageTag == null ) {
+    messageTag = document.getElementById('message');
+  }
+  messageTag.innerHTML = message;
+}
+
+function setScore(score) {
+  if( scoreTag == null) {
+    scoreTag = document.getElementById('score');
+  }
+  scoreTag.innerHTML = score;
+}
+
+function prepareImages() {
+  var loadedImageCount = 0;
+  for ( var i in images ) {
+    var image = new Image();
+    image.src = './../images/' + images[i];
+    image.onload = function() {
+      loadedImageCount++;
+      if(loadedImageCount == images.length) {
+        console.log(loadedImageCount);
+        initGame();
+      }
+    };
+    imageContainer[images[i]] = image;
+  }
+}
+
+function startGame() {
+  if(timer != null) {
+    return;
+  }
+  initGame();
+  timer = setInterval(draw,30);
+}
+
+function stopTimer() {
+  clearInterval(timer);
+  timer = null;
+}
+
+function initGame() {
+  createBall();
+  createRacket();
+  clearContext();
+  ctx.drawImage(imageContainer['racket.png'],racket.x,racket.y,racket.w,racket.h);
+  ctx.drawImage(imageContainer['ball2.png'],ball.x,ball.y,ball.w,ball.h);
+  isGameOver = false;
+  setMessage('');
+  score = 0;
+  setScore(score);
+}
+
+function createBall() {
+  // ボール位置の初期化
+  ball.x = canvas.width / 2 - BALL_WIDTH /2 ;
+  ball.y = 0;
+  ball.w = BALL_WIDTH;
+  ball.h = BALL_HEIGHT;
+  ball.vx = 0;
+  ball.vy = 50;
+  ball.dt = 0.1;
+  ball.top = function() { return this.y; }
+  ball.bottom = function() { return this.y + this.h; }
+  ball.left = function() { return this.x; }
+  ball.right = function() { return this.x + this.w; }
+}
+
+function createRacket() {
+  // ラケット位置の初期化
+  racket.x = canvas.width / 2 - RACKET_WIDTH / 2;
+  racket.y = canvas.height - 70;
+  racket.w = RACKET_WIDTH;
+  racket.h = RACKET_HEIGHT;
+  racket.top = function() { return this.y; }
+  racket.bottom = function() { return this.y + this.h; }
+  racket.left = function() { return this.x; }
+  racket.right = function() { return this.x + this.w; }
+}
+
+function draw(){
+  clearContext();
+  moveBall();
+  hitRacket();
+  
+  if( isGameOver ) {
+    gameOver();
+  }
+  ctx.drawImage(imageContainer['racket.png'],racket.x,racket.y,racket.w,racket.h);
+  ctx.drawImage(imageContainer['ball2.png'],ball.x,ball.y,ball.w,ball.h);
+}
+
+function moveBall() {
+  if( ball.right() > canvas.width) {
+    // canvasの右側に到達
+    ball.vx = -ball.vx;
+  }
+  if( ball.left() < 0 ) {
+    // canvasの左側に到達
+    ball.vx = -ball.vx;
+  }
+  if( ball.top() < 0 ) {
+    // canvasの上側に到達
+    ball.vy = -ball.vy;
+  }
+  if( ball.bottom() > canvas.height ) {
+    // canvasの下側に到達
+    //ball.vy = -ball.vy;
+    isGameOver = true;
+  }
+  ball.x += ball.vx * ball.dt;
+  ball.y += ball.vy * ball.dt;
+}
+
+function hitRacket() {
+  // 衝突判定
+  if(
+    ball.left() < racket.right() &&
+    ball.right() > racket.left() &&
+    ball.top() < racket.bottom() &&
+    ball.bottom() > racket.top()
+  ){
+    // 打つたびにスコアアップする
+    score += Math.round(ball.dt * 100);
+    setScore(score);
+    // 打つたびに加速する
+    ball.dt += 0.01;
+    if( ball.vy > 0 ) {
+      // 打ち返す
+      ball.vy = -ball.vy;
+      // ラケットの中心からの距離でX方向の角度を変化させる
+      // ラケットの左側であれば左方向に反射
+      // ラケットの右側であれば右方向に反射
+      // ラケットの中心に近づけばより垂直に反射する
+      var dx = (racket.x + racket.w / 2) - (ball.x + ball.w / 2);
+      ball.vx = -dx;
+    }
+  }
+}
+
+function keyDown(event) {
+  if(event.keyCode == 39) {
+    // 右矢印キーが押された
+    if( racket.right() < canvas.width ) {
+      racket.x += 40;
+    }
+  } else if( event.keyCode == 37) {
+    // 左矢印キーが押された
+    if( racket.left() > 0 ) {
+      racket.x -= 40;
+    }
+  }
+}
+
+function gameOver() {
+  clickGiveUp();
+}
+
+function clickGiveUp() {
+  setMessage('残念、もう一度挑戦してみよう');
+  stopTimer();
+}
+</script>
+</head>
+<body>
+<div id="container">
+  <h1>ラケットゲーム</h1>
+  <div id="scoreBox"><span id="scoreLabel">スコア</span><span id="score">0</span></div>
+  <div id="message"></div>
+  <canvas id="canvas" width="360px" height="400px"></canvas><br>
+  <div id="control">
+    <button id="start">スタート</button>
+    <button id="giveUp">ギブアップ</button>
+  </div>
+</div>
+</body>
+</html>
