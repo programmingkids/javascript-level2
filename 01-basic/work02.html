@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>step02</title>
+<title>work02</title>
 <meta name="viewport" content="width=device-width, user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <link rel="stylesheet" type="text/css" href="style.css">
@@ -13,19 +13,19 @@ var ctx = null;
 window.onload = init;
 
 function init() {
-  // startボタンを取得
-  var startButton = document.getElementById('start');
-  // startボタンをクリックした時に「draw」関数を実行する
-  startButton.onclick = draw;
-  var clearButton = document.getElementById('clear');
-  clearButton.onclick = clear;
-  
   // canvasを取得
   canvas = document.getElementById('canvas');
   // canvasからコンテキストを取得
   ctx = canvas.getContext('2d');
   // コンテキストの背景色を「白」にする
   clear();
+  
+  // startボタンを取得
+  var startButton = document.getElementById('start');
+  // startボタンをクリックした時に「draw」関数を実行する
+  startButton.onclick = draw;
+  var clearButton = document.getElementById('clear');
+  clearButton.onclick = clear;
 }
 
 function draw() {
