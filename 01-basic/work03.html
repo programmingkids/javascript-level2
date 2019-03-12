@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>work02</title>
+<title>work03</title>
 <meta name="viewport" content="width=device-width, user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <link rel="stylesheet" type="text/css" href="style.css">
@@ -29,13 +29,17 @@ function init() {
 }
 
 function draw() {
-  // 四角形の枠線を描く
-  ctx.strokeStyle = "red";
-  ctx.strokeRect(50, 50, 100, 100);
+  // 丸を描く
+  ctx.beginPath();
+  ctx.strokeStyle = "green";
+  ctx.arc(50, 50, 25, 0, Math.PI * 2, false);
+  ctx.stroke();
   
-  // 塗りつぶした四角形を描く
-  ctx.fillStyle = "orange";
-  ctx.fillRect(150, 150, 50, 50);
+  // 塗りつぶした丸を描く
+  ctx.beginPath();
+  ctx.fillStyle = "blue";
+  ctx.arc(150, 150, 50, 0, Math.PI*2 , false);
+  ctx.fill();
 }
 
 function clear() {
@@ -47,7 +51,7 @@ function clear() {
 </head>
 <body>
 <div id="container">
-  <h1>四角形を描く</h1>
+  <h1>丸を描く</h1>
   <canvas id="canvas" width="300px" height="300px"></canvas>
   <div id="control">
     <button id="start">スタート</button>

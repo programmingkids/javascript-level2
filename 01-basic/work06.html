@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>step06</title>
+<title>work07</title>
 <meta name="viewport" content="width=device-width, user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <link rel="stylesheet" type="text/css" href="style.css">
@@ -11,20 +11,12 @@ var canvas = null;
 var ctx = null;
 var ball = null;
 
-// ウィンドウ読み込み完了後に「init」関数を実行
 window.onload = init;
 
 function init() {
-  // startボタンを取得
-  var startButton = document.getElementById('start');
-  // startボタンをクリックした時に「draw」関数を実行する
-  startButton.onclick = draw;
-  var clearButton = document.getElementById('clear');
-  clearButton.onclick = clear;
-  
   // canvasを取得
   canvas = document.getElementById('canvas');
-  // canvasからコンテキストを取得
+  canvas.onclick = drawOnClickedPosition;
   ctx = canvas.getContext('2d');
   prepareImages();
   clear();
@@ -42,21 +34,35 @@ function prepareImages() {
   ball.src = '../images/ball.png';
 }
 
-function draw() {
+function drawOnClickedPosition(event) {
+  // クリックされた位置を取得します
+  var position = getClickedPosition(event);
+  // いったん背景色をクリアします
+  clear();
+  // クリックされた位置を画像の中心にするために座標の調整をします
+  var x = position.x - 20;
+  var y = position.y - 20;
   // キャンバスの左上に40×40の大きさで画像を描きます
-  ctx.drawImage(ball,0,0,40,40);
-  
+  ctx.drawImage(ball,x,y,40,40);
+}
+
+function getClickedPosition(event) {
+  // キャンバスの左上からx座標
+  var xBase  = canvas.offsetLeft;
+  // キャンバスの左上からのy座標
+  var yBase  = canvas.offsetTop;
+  // キャンバス内のクリックされたのx座標
+  var x = event.pageX - xBase;
+  // キャンバス内のクリックされたのy座標
+  var y = event.pageY - yBase;
+  return {"x":x,"y":y};
 }
 </script>
 </head>
 <body>
 <div id="container">
-  <h1>画像をキャンバスに描く</h1>
+  <h1>クリックした場所に画像を表示</h1>
   <canvas id="canvas" width="300px" height="300px"></canvas>
-  <div id="control">
-    <button id="start">スタート</button>
-    <button id="clear">クリア</button>
-  <div>
 </div>
 </body>
 </html>
