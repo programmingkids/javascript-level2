@@ -43,8 +43,6 @@ function init() {
   prepareImages();
   var start = document.getElementById('start');
   start.onclick = startGame;
-  var giveUp = document.getElementById('giveUp');
-  giveUp.onclick = clickGiveUp;
 }
 
 function initContext() {
@@ -79,7 +77,6 @@ function prepareImages() {
     image.onload = function() {
       loadedImageCount++;
       if(loadedImageCount == images.length) {
-        console.log(loadedImageCount);
         initGame();
       }
     };
@@ -101,9 +98,9 @@ function stopTimer() {
 }
 
 function initGame() {
+  clearContext();
   createBall();
   createRacket();
-  clearContext();
   ctx.drawImage(imageContainer['racket.png'],racket.x,racket.y,racket.w,racket.h);
   ctx.drawImage(imageContainer['ball2.png'],ball.x,ball.y,ball.w,ball.h);
   isGameOver = false;
@@ -214,10 +211,6 @@ function keyDown(event) {
 }
 
 function gameOver() {
-  clickGiveUp();
-}
-
-function clickGiveUp() {
   setMessage('残念、もう一度挑戦してみよう');
   stopTimer();
 }
@@ -231,7 +224,6 @@ function clickGiveUp() {
   <canvas id="canvas" width="360px" height="400px"></canvas><br>
   <div id="control">
     <button id="start">スタート</button>
-    <button id="giveUp">ギブアップ</button>
   </div>
 </div>
 </body>

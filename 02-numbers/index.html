@@ -124,14 +124,6 @@ function getClickedIndex(position) {
   return index;
 }
 
-function startGame() {
-  // 画像をランダムに並べます
-  shuffleImages();
-  // パネルの描画をします
-  drawPanel();
-  setMessage('');
-}
-
 function drawPanel() {
   // 描画
   var x = 0;
@@ -146,6 +138,14 @@ function drawPanel() {
       x = 0;
     }
   }
+}
+
+function startGame() {
+  // 画像をランダムに並べます
+  shuffleImages();
+  // パネルの描画をします
+  drawPanel();
+  setMessage('');
 }
 
 function checkPanel(clickedPanelIndex,emptyPanelIndex) {
@@ -201,7 +201,7 @@ function clickGiveUp() {
 </head>
 <body>
 <div id="container">
-  <h1>数字並びゲーム</h1>
+  <h1>数字並び替えゲーム</h1>
   <div id="message"></div>
   <canvas id="canvas" width="300px" height="300px"></canvas>
   <div id="control">

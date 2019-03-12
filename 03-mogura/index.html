@@ -197,11 +197,11 @@ function clickPanel(event) {
     score += incrementScore;
     setScore(score);
     // 連続の「当たり」の場合、スコアをさらに加算する
-    incrementScore += initialScore;
+    incrementScore += initialIncrementScore;
     setMessage('当たり');
   } else {
     // 「間違い」の場合、加算値を初期化する
-    incrementScore = initialScore;
+    incrementScore = initialIncrementScore;
     setMessage('間違い');
     // ライフを減らします
     life -= 1;
