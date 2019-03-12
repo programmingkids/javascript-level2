@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>work02</title>
-<meta name="viewport" content="width=device-width, user-scalable=no" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
 <link rel="stylesheet" type="text/css" href="style.css">
 <script>
 var canvas = null;
@@ -28,6 +26,12 @@ function init() {
   clearButton.onclick = clear;
 }
 
+function clear() {
+  // 背景色を白で塗りつぶす
+  ctx.fillStyle = 'rgb(255,255,255)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
 function draw() {
   // 四角形の枠線を描く
   ctx.strokeStyle = "red";
@@ -36,12 +40,6 @@ function draw() {
   // 塗りつぶした四角形を描く
   ctx.fillStyle = "orange";
   ctx.fillRect(150, 150, 50, 50);
-}
-
-function clear() {
-  // 背景色を白で塗りつぶす
-  ctx.fillStyle = 'rgb(255,255,255)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 </script>
 </head>

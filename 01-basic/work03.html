@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>work03</title>
-<meta name="viewport" content="width=device-width, user-scalable=no" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
 <link rel="stylesheet" type="text/css" href="style.css">
 <script>
 var canvas = null;
@@ -28,6 +26,12 @@ function init() {
   clearButton.onclick = clear;
 }
 
+function clear() {
+  // 背景色を白で塗りつぶす
+  ctx.fillStyle = 'rgb(255,255,255)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
 function draw() {
   // 丸を描く
   ctx.beginPath();
@@ -40,12 +44,6 @@ function draw() {
   ctx.fillStyle = "blue";
   ctx.arc(150, 150, 50, 0, Math.PI*2 , false);
   ctx.fill();
-}
-
-function clear() {
-  // 背景色を白で塗りつぶす
-  ctx.fillStyle = 'rgb(255,255,255)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 </script>
 </head>
