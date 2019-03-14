@@ -12,6 +12,7 @@ var clearButton = null;
 var images = [];
 // 読み込む画像のファイル配列
 var files = ['A','B','C','D','E','F','G','H','I',];
+var imageCount = 0;
 
 window.onload = init;
 
@@ -20,10 +21,10 @@ function init() {
   ctx = canvas.getContext('2d');
   prepareImages();
   clear();
-  clearButton = document.getElementById('clear');
-  clearButton.onclick = clear;
   // キャンバスをクリックした時のイベント登録
   canvas.onclick = onCanvasClicked;
+  clearButton = document.getElementById('clear');
+  clearButton.onclick = clear;
 }
 
 function clear() {
@@ -37,11 +38,18 @@ function prepareImages() {
   for ( var i in files ) {
     var image = new Image();
     image.src = './../images/' + files[i] + '.png';
+    image.onload = function() {
+      imageCount++;
+    };
     images.push(image);
   }
 }
 
 function onCanvasClicked(event) {
+  if( imageCount != images.length) {
+    alert("画像読込が完了していません");
+    return;
+  }
   var position = getClickedPosition(event);
   var index = getClickedIndex(position);
   draw(index);

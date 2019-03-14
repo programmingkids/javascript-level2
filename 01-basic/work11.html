@@ -7,14 +7,14 @@
 <script>
 var canvas = null;
 var ctx = null;
-var square = null;
+var robot = null;
 var timer = null;
 var x = 0;
 var y = 0;
-var dx = 10;
-var dy = 10;
-var startButton = null;
-var stopButton = null;
+var dx = 25;
+var dy = 25;
+var image_width = 50;
+var image_height = 50;
 
 window.onload = init;
 window.onkeydown = keyDown;
@@ -24,10 +24,6 @@ function init() {
   ctx = canvas.getContext('2d');
   prepareImages();
   clear();
-  startButton = document.getElementById('start');
-  startButton.onclick = start;
-  stopButton = document.getElementById('stop');
-  stopButton.onclick = stop;
 }
 
 function clear() {
@@ -36,44 +32,40 @@ function clear() {
 }
 
 function prepareImages() {
-  square = new Image();
-  square.src = './../images/square.png';
+  robot = new Image();
+  robot.src = './../images/robot6.png';
+  robot.onload = start;
 }
 
 function draw() {
   clear();
-  ctx.drawImage(square,x,y,50,50);
+  ctx.drawImage(robot,x,y,image_width,image_height);
 }
 
 function start() {
-  x = canvas.width / 2 - 25;
-  y = canvas.height / 2 - 25;
+  x = canvas.width / 2 - image_width / 2;
+  y = canvas.height / 2 - image_height / 2;
   if( timer != null ) {
     return;
   }
   timer = setInterval(draw,30);
 }
 
-function stop() {
-  clearInterval(timer);
-  timer = null;
-}
-
 function keyDown(event) {
-  // 左
-  if( event.keyCode == 37 && x >= 0 ) {
+  // 左端
+  if( event.keyCode == 37 && x-dx >= 0 ) {
     x -= dx;
   }
-  // 上
-  if( event.keyCode == 38 && y >= 0 ) {
+  // 上端
+  if( event.keyCode == 38 && y-dy >= 0 ) {
     y -= dy;
   }
-  // 右
-  if( event.keyCode == 39 && x + 50 <= canvas.width ) {
+  // 右端
+  if( event.keyCode == 39 && x + image_width < canvas.width ) {
     x += dx;
   }
-  // 下
-  if( event.keyCode == 40 && y + 50 <= canvas.height ) {
+  // 下端
+  if( event.keyCode == 40 && y + image_height < canvas.height ) {
     y += dy;
   }
 }
@@ -82,11 +74,7 @@ function keyDown(event) {
 <body>
 <div id="container">
   <h1>カーソルキーで画像が移動</h1>
-  <canvas id="canvas" width="320px" height="320px"></canvas>
-  <div id="control">
-    <button id="start">スタート</button>
-    <button id="stop">停止</button>
-  <div>
+  <canvas id="canvas" width="300px" height="300px"></canvas>
 </div>
 </body>
 </html>

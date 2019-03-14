@@ -13,6 +13,7 @@ var clearButton = null;
 var images = [];
 // 読み込む画像のファイル配列
 var files = ['A','B','C','D','E','F','G','H','I',];
+var imageCount = 0;
 
 window.onload = init;
 
@@ -33,7 +34,11 @@ function clear() {
 }
 
 function start() {
-  draw();
+  if( imageCount == images.length) {
+    draw();
+  } else {
+    alert("画像読込が完了していません");
+  }
 }
 
 function prepareImages() {
@@ -41,6 +46,9 @@ function prepareImages() {
   for ( var i in files ) {
     var image = new Image();
     image.src = './../images/' + files[i] + '.png';
+    image.onload = function() {
+      imageCount++;
+    };
     images.push(image);
   }
 }
