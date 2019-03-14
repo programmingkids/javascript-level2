@@ -28,7 +28,6 @@ function init() {
   
   prepareImages();
   clear();
-  timer = setInterval(draw,100);
 }
 
 function clear() {
@@ -41,6 +40,11 @@ function prepareImages() {
   // 画像の読み込み
   ball = new Image();
   ball.src = './../images/ball.png';
+  ball.onload = startMove;
+}
+
+function startMove() {
+  timer = setInterval(draw,30);
 }
 
 function draw() {
