@@ -41,45 +41,16 @@ function start() {
   }
 }
 
-function prepareImages() {
-  // 画像を配列から読み込む
-  for ( var i in files ) {
-    var image = new Image();
-    image.src = './../images/' + files[i] + '.png';
-    image.onload = function() {
-      imageCount++;
-    };
-    images.push(image);
-  }
-}
 
-function draw() {
-  // いったん背景色をクリアする
-  clear();
-  
-  // 画像の左上のX座標
-  var x = 0;
-  // 画像の左上のY座標
-  var y = 0;
-  // 表示する画像の幅
-  var w = 90;
-  // 表示する画像の高さ
-  var h = 90;
-  
-  for ( var i in images ) {
-    // 画像を順番に表示する
-    ctx.drawImage(images[i],x,y,w,h);
-    // 次の画像のX座標を画像の幅だけ移動する
-    x += w;
-    // 1行に3枚なので、「3」の剰余が「2」であれば改行する
-    if( i % 3 == 2 ) {
-      // 改行するのでX座標を「0」にする
-      x = 0;
-      // 改行するのでY座標を画像の高さだけ移動する
-      y += h;
-    }
-  }
-}
+
+
+
+
+
+
+
+
+
 </script>
 </head>
 <body>

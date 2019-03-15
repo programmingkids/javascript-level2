@@ -67,57 +67,18 @@ function getClickedPosition(event) {
   return {"x":x,"y":y};
 }
 
-function getClickedIndex(position) {
-  // クリックされたXとYの座標に基づいて、
-  // 9分割されたキャンバスの該当位置を判定する
-  var index = null;
-  if(position.y <= 90) {
-    if(position.x <= 90) {
-      index = 0;
-    } else if(position.x <= 180) {
-      index = 1;
-    } else {
-      index = 2;
-    }
-  } else if( position.y <= 180) {
-    if(position.x <= 90) {
-      index = 3;
-    } else if(position.x <= 180) {
-      index = 4;
-    } else {
-      index = 5;
-    }
-  } else {
-    if(position.x <= 90) {
-      index = 6;
-    } else if(position.x <= 180) {
-      index = 7;
-    } else {
-      index = 8;
-    }
-  }
-  return index;
-}
 
-function draw(index) {
-  // いったん背景色をクリアする
-  clear();
-  
-  // 画像の左上のX座標
-  var x = 0;
-  // 画像の左上のY座標
-  var y = 0;
-  // 表示する画像の幅
-  var w = 90;
-  // 表示する画像の高さ
-  var h = 90;
-  
-  // インデックスに基づき座標を計算します
-  x = Math.floor((index % 3)) * w;
-  y = Math.floor((index / 3)) * h;
-  // 該当の画像を表示します
-  ctx.drawImage(images[index],x,y,w,h);
-}
+
+
+
+
+
+
+
+
+
+
+
 </script>
 </head>
 <body>
