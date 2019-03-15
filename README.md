@@ -1,12 +1,12 @@
 # JavaScript レベル2
 ## 対象
-JavaScriptレベル1を終了した方
+JavaScriptレベル1を修了した方
 
 ## 想定学習時間
 15時間程度
 
 ## 前提
-* JavaScriptレベル1を終了した方
+* JavaScriptレベル1を修了した方
 * JavaScriptの基本的な文法を把握している
 
 ## 目標
