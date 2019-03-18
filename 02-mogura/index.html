@@ -133,96 +133,13 @@ function setScore(score) {
   scoreTag.innerHTML = score;
 }
 
-function startGame() {
-  if(imageCount != 1) {
-    alert("画像の読み込みが完了していません");
-    return;
-  }
-  if(timer != null) {
-    return;
-  }
-  // メッセージを初期化
-  setMessage('');
-  // スコアの増加値を初期化
-  incrementScore = initialIncrementScore;
-  // スコアを初期化
-  score = initialScore;
-  setScore(score);
-  // ライフ残数を初期化
-  life = initialLife;
-  // ライフ残量を表示します
-  drawLife();
-  // コンテキストをクリアして初期化
-  clearContext();
-  // ゲーム開始
-  timer = setInterval(drawMogura,1000);
-}
+// ここから下にプログラムを作成します
 
-function drawLife() {
-  // ライフ表示タグを空にします
-  lifeTag.innerHTML = '';
-  // 残ライフ数を表示します
-  for( var i = 0; i < life; i++) {
-    // imgタグを作成します
-    var imageTag = document.createElement('img');
-    // imgタグに画像を読み込みます
-    imageTag.src = './../images/heart.png';
-    // 表示します
-    lifeTag.appendChild(imageTag);
-  }
-}
 
-function drawMogura() {
-  clearContext();
-  // 表示するモグラのインデックス（パネルの位置に相当）
-  visibleIndex = getRandomNumber();
-  var x = 0;
-  var y = 0;
-  var w = 100;
-  var h = 100;
-  // モグラ表示位置の座標を計算します
-  x = Math.floor((visibleIndex % 3)) * w;
-  y = Math.floor((visibleIndex / 3)) * h;
-  // モグラを表示します
-  ctx.drawImage(mogura,x,y,w,h);
-}
 
-function clickPanel(event) {
-  // timerがnullであれば、クリックイベントは処理しない
-  if( timer == null ) { return false; }
-  // クリックされたキャンバス内の座標を連想配列で取得します
-  var position = getClickedPosition(event);
-  // 座標に基づき、クリックされたパネルのインデックスを取得します
-  var clickedPanelIndex = getClickedIndex(position);
-  // クリックされたインデックスと表示しているインデックスが同じであれば「当たり」
-  if(clickedPanelIndex == visibleIndex) {
-    clearContext();
-    // スコア加算
-    score += incrementScore;
-    setScore(score);
-    // 連続の「当たり」の場合、スコアをさらに加算する
-    incrementScore += initialIncrementScore;
-    setMessage('当たり');
-  } else {
-    // 「間違い」の場合、加算値を初期化する
-    incrementScore = initialIncrementScore;
-    setMessage('間違い');
-    // ライフを減らします
-    life -= 1;
-    // 残ライフ数を表示します
-    drawLife();
-  }
-  // ゲームオーバーの判定をします
-  checkGameOver();
-}
 
-function checkGameOver() {
-  // 残ライフ数が0以下ならばゲーム終了
-  if(life <= 0) {
-    setMessage('ゲームオーバー');
-    stopTimer();
-  }
-}
+
+
 </script>
 </head>
 <body>
