@@ -11,7 +11,6 @@ var canvas;
 var ctx;
 var timer;
 var mogura;
-var lifeImage;
 
 // 表示されてる画像のインデックス
 var visibleIndex = 0;
@@ -33,6 +32,7 @@ var incrementScore = initialIncrementScore;
 var score = initialScore;
 // ライフ残数
 var life = initialLife;
+var imageCount = 0;
 
 window.onload = init;
 
@@ -68,9 +68,9 @@ function prepareImages() {
   // モグラ画像の読み込みをします
   mogura = new Image();
   mogura.src = './../images/robot4.png';
-  
-  lifeImage = new Image();
-  lifeImage = './../images/heart.png'
+  mogura.onload = function() {
+    imageCount++;
+  };
 }
 
 function clearContext() {
@@ -134,6 +134,10 @@ function setScore(score) {
 }
 
 function startGame() {
+  if(imageCount != 1) {
+    alert("画像の読み込みが完了していません");
+    return;
+  }
   if(timer != null) {
     return;
   }
@@ -162,7 +166,7 @@ function drawLife() {
     // imgタグを作成します
     var imageTag = document.createElement('img');
     // imgタグに画像を読み込みます
-    imageTag.src = lifeImage;
+    imageTag.src = './../images/heart.png';
     // 表示します
     lifeTag.appendChild(imageTag);
   }
