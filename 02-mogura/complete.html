@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>モグラたたき</title>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" type="text/css" href="style.css">
+<script>
+var canvas;
+var ctx;
+var timer;
+var mogura;
+
+// 表示されてる画像のインデックス
+var visibleIndex = 0;
+// スコア表示用タグ
+var scoreTag = null;
+// ライフ表示用タグ
+var lifeTag = null;
+// メッセージ表示用タグ
+var messageTag = null;
+// ライフの初期値
+var initialLife = 3;
+// スコアの初期値
+var initialScore = 0;
+// スコア増加の初期値
+var initialIncrementScore = 5;
+// スコアの増加値
+var incrementScore = initialIncrementScore;
+// スコア値
+var score = initialScore;
+// ライフ残数
+var life = initialLife;
+var imageCount = 0;
+
+window.onload = init;
+
+function init() {
+  initContext();
+  prepareImages();
+  
+  canvas.onclick = clickPanel;
+  var start = document.getElementById('start');
+  start.onclick = startGame;
+  var giveUp = document.getElementById('giveUp');
+  giveUp.onclick = clickGiveUp;
+  
+  // メッセージ表示用のタグの取得
+  messageTag = document.getElementById('message');
+  // スコア表示用のタグの取得
+  scoreTag = document.getElementById('score');
+  // 残ライフ表示用のタグの取得
+  lifeTag = document.getElementById('life');
+}
+
+function getRandomNumber() {
+  return Math.floor(Math.random() * 9);
+}
+
+function initContext() {
+  canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+  clearContext()
+}
+
+function prepareImages() {
+  // モグラ画像の読み込みをします
+  mogura = new Image();
+  mogura.src = './../images/robot4.png';
+  mogura.onload = function() {
+    imageCount++;
+  };
+}
+
+function clearContext() {
+  // コンテキストの背景色を設定する
+  ctx.fillStyle = '#EEE8AA';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.beginPath();
+  // 左側の縦線
+  ctx.moveTo(100,0);
+  ctx.lineTo(100,300);
+  // 右側の縦線
+  ctx.moveTo(200,0);
+  ctx.lineTo(200,300);
+  // 一番目の横線
+  ctx.moveTo(0,100);
+  ctx.lineTo(300,100);
+  // 二番目の横線
+  ctx.moveTo(0,200);
+  ctx.lineTo(300,200);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+function getClickedPosition(event) {
+  // キャンバスの左上からx座標
+  var xBase  = canvas.offsetLeft;
+  // キャンバスの左上からのy座標
+  var yBase  = canvas.offsetTop;
+  // キャンバス内のクリックしたx座標
+  var x = event.pageX - xBase;
+  // キャンバス内のクリックしたy座標
+  var y = event.pageY - yBase;
+  return {"x":x,"y":y};
+}
+
+function getClickedIndex(position) {
+  var index = null;
+  // クリックされた座標に基づき、インデックスを計算します
+  index = Math.floor(position.y / 100) * 3;
+  index += Math.floor(position.x / 100);
+  return index;
+}
+
+function clickGiveUp() {
+  setMessage('残念、もう一度挑戦してみよう');
+  stopTimer();
+}
+
+function stopTimer() {
+  // タイマーを停止します
+  clearInterval(timer);
+  timer = null;
+}
+
+function setMessage(message) {
+  messageTag.innerHTML = message;
+}
+
+function setScore(score) {
+  scoreTag.innerHTML = score;
+}
+
+function startGame() {
+  if(imageCount != 1) {
+    alert("画像の読み込みが完了していません");
+    return;
+  }
+  if(timer != null) {
+    return;
+  }
+  // メッセージを初期化
+  setMessage('');
+  // スコアの増加値を初期化
+  incrementScore = initialIncrementScore;
+  // スコアを初期化
+  score = initialScore;
+  setScore(score);
+  // ライフ残数を初期化
+  life = initialLife;
+  // ライフ残量を表示します
+  drawLife();
+  // コンテキストをクリアして初期化
+  clearContext();
+  // ゲーム開始
+  timer = setInterval(drawMogura,1000);
+}
+
+function drawLife() {
+  // ライフ表示タグを空にします
+  lifeTag.innerHTML = '';
+  // 残ライフ数を表示します
+  for( var i = 0; i < life; i++) {
+    // imgタグを作成します
+    var imageTag = document.createElement('img');
+    // imgタグに画像を読み込みます
+    imageTag.src = './../images/heart.png';
+    // 表示します
+    lifeTag.appendChild(imageTag);
+  }
+}
+
+function drawMogura() {
+  clearContext();
+  // 表示するモグラのインデックス（パネルの位置に相当）
+  visibleIndex = getRandomNumber();
+  var x = 0;
+  var y = 0;
+  var w = 100;
+  var h = 100;
+  // モグラ表示位置の座標を計算します
+  x = Math.floor((visibleIndex % 3)) * w;
+  y = Math.floor((visibleIndex / 3)) * h;
+  // モグラを表示します
+  ctx.drawImage(mogura,x,y,w,h);
+}
+
+function clickPanel(event) {
+  // timerがnullであれば、クリックイベントは処理しない
+  if( timer == null ) { return false; }
+  // クリックされたキャンバス内の座標を連想配列で取得します
+  var position = getClickedPosition(event);
+  // 座標に基づき、クリックされたパネルのインデックスを取得します
+  var clickedPanelIndex = getClickedIndex(position);
+  // クリックされたインデックスと表示しているインデックスが同じであれば「当たり」
+  if(clickedPanelIndex == visibleIndex) {
+    clearContext();
+    // スコア加算
+    score += incrementScore;
+    setScore(score);
+    // 連続の「当たり」の場合、スコアをさらに加算する
+    incrementScore += initialIncrementScore;
+    setMessage('当たり');
+  } else {
+    // 「間違い」の場合、加算値を初期化する
+    incrementScore = initialIncrementScore;
+    setMessage('間違い');
+    // ライフを減らします
+    life -= 1;
+    // 残ライフ数を表示します
+    drawLife();
+  }
+  // ゲームオーバーの判定をします
+  checkGameOver();
+}
+
+function checkGameOver() {
+  // 残ライフ数が0以下ならばゲーム終了
+  if(life <= 0) {
+    setMessage('ゲームオーバー');
+    stopTimer();
+  }
+}
+</script>
+</head>
+<body>
+<div id="container">
+  <h1>モグラたたき</h1>
+  <div id="scoreBox"><span id="scoreLabel">スコア</span><span id="score">0</span></div>
+  <div id="lifeBox"><span id="lifeLabel">残りライフ</span><span id="life"></span></div>
+  <div id="message"></div>
+  <canvas id="canvas" width="300px" height="300px"></canvas><br>
+  <div id="control">
+    <button id="start">スタート</button>
+    <button id="giveUp">ギブアップ</button>
+  </div>
+</div>
+</body>
+</html>
