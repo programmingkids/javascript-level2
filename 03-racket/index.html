@@ -97,123 +97,14 @@ function stopTimer() {
   timer = null;
 }
 
-function initGame() {
-  clearContext();
-  createBall();
-  createRacket();
-  ctx.drawImage(imageContainer['racket.png'],racket.x,racket.y,racket.w,racket.h);
-  ctx.drawImage(imageContainer['ball2.png'],ball.x,ball.y,ball.w,ball.h);
-  isGameOver = false;
-  setMessage('');
-  score = 0;
-  setScore(score);
-}
+// ここから下にプログラムを作成します
 
-function createBall() {
-  // ボール位置の初期化
-  ball.x = canvas.width / 2 - BALL_WIDTH /2 ;
-  ball.y = 0;
-  ball.w = BALL_WIDTH;
-  ball.h = BALL_HEIGHT;
-  ball.vx = 0;
-  ball.vy = 50;
-  ball.dt = 0.1;
-  ball.top = function() { return this.y; }
-  ball.bottom = function() { return this.y + this.h; }
-  ball.left = function() { return this.x; }
-  ball.right = function() { return this.x + this.w; }
-}
 
-function createRacket() {
-  // ラケット位置の初期化
-  racket.x = canvas.width / 2 - RACKET_WIDTH / 2;
-  racket.y = canvas.height - 70;
-  racket.w = RACKET_WIDTH;
-  racket.h = RACKET_HEIGHT;
-  racket.top = function() { return this.y; }
-  racket.bottom = function() { return this.y + this.h; }
-  racket.left = function() { return this.x; }
-  racket.right = function() { return this.x + this.w; }
-}
 
-function draw(){
-  clearContext();
-  moveBall();
-  hitRacket();
-  
-  if( isGameOver ) {
-    gameOver();
-  }
-  ctx.drawImage(imageContainer['racket.png'],racket.x,racket.y,racket.w,racket.h);
-  ctx.drawImage(imageContainer['ball2.png'],ball.x,ball.y,ball.w,ball.h);
-}
 
-function moveBall() {
-  if( ball.right() > canvas.width) {
-    // canvasの右側に到達
-    ball.vx = -ball.vx;
-  }
-  if( ball.left() < 0 ) {
-    // canvasの左側に到達
-    ball.vx = -ball.vx;
-  }
-  if( ball.top() < 0 ) {
-    // canvasの上側に到達
-    ball.vy = -ball.vy;
-  }
-  if( ball.bottom() > canvas.height ) {
-    // canvasの下側に到達
-    //ball.vy = -ball.vy;
-    isGameOver = true;
-  }
-  ball.x += ball.vx * ball.dt;
-  ball.y += ball.vy * ball.dt;
-}
 
-function hitRacket() {
-  // 衝突判定
-  if(
-    ball.left() < racket.right() &&
-    ball.right() > racket.left() &&
-    ball.top() < racket.bottom() &&
-    ball.bottom() > racket.top()
-  ){
-    // 打つたびにスコアアップする
-    score += Math.round(ball.dt * 100);
-    setScore(score);
-    // 打つたびに加速する
-    ball.dt += 0.01;
-    if( ball.vy > 0 ) {
-      // 打ち返す
-      ball.vy = -ball.vy;
-      // ラケットの中心からの距離でX方向の角度を変化させる
-      // ラケットの左側であれば左方向に反射
-      // ラケットの右側であれば右方向に反射
-      // ラケットの中心に近づけばより垂直に反射する
-      var dx = (racket.x + racket.w / 2) - (ball.x + ball.w / 2);
-      ball.vx = -dx;
-    }
-  }
-}
 
-function keyDown(event) {
-  if(event.keyCode == 39) {
-    // 右矢印キーが押された
-    if( racket.right() < canvas.width ) {
-      racket.x += 40;
-    }
-  } else if( event.keyCode == 37) {
-    // 左矢印キーが押された
-    if( racket.left() > 0 ) {
-      racket.x -= 40;
-    }
-  }
-}
 
-function gameOver() {
-  setMessage('残念、もう一度挑戦してみよう');
-  stopTimer();
-}
 </script>
 </head>
 <body>
