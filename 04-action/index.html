@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>アクションゲーム</title>
+<title>コイン集めゲーム</title>
 <meta name="viewport" content="width=device-width, user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <link rel="stylesheet" type="text/css" href="style.css">
@@ -72,7 +72,6 @@ var createData = function () {
     "dt" : 5,
     "move" : squareMove,
   };
-
   enemy_data3 = {
     "image" : imageContainer['enemy03.png'],
     "x" : canvas.width - IMAGE_WIDTH,
@@ -209,9 +208,13 @@ Element.prototype.draw = function() {
 
 // ここから下にプログラムを作成します
 function initGame() {
+  // フレーム数の初期化
   frame = 0;
+  // プレイヤーの初期化
   player = {};
+  // 敵の配列の初期化
   enemies = [];
+  // コインの初期化
   coins = [];
   clearContext();
   // プレイヤー作成
@@ -257,7 +260,8 @@ function drawElement() {
   }
 }
 
-function draw(){
+function draw() {
+  // フレーム数を加算する
   frame++;
   clearContext();
   // コイン追加
@@ -273,6 +277,7 @@ function draw(){
     gameOver();
     return;
   }
+  // プレイヤーとコインが衝突するとスコアアップ、コインを消す
   var index = hit(player, coins);
   if(index != null) {
     coins.splice(index,1);
@@ -285,17 +290,23 @@ function hit(character, targets) {
   // 衝突判定
   var result = null;
   for(var t in targets) {
+    // キャラクターの中心座標と対象物のX軸の差を計算
     var dx = character.center()["x"] - targets[t].center()["x"];
+    // キャラクターの中心座標と対象物のY軸の差を計算
     var dy = character.center()["y"] - targets[t].center()["y"];
+    // 三平方の定理に基づいて距離を計算
     var distance = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
+    // 距離が40以下であれば衝突と判定
     if( distance <= 40) {
       result = t;
       break;
     }
   }
+  // 配列内の衝突した要素のインデックスを返す
   return result;
 }
 
+// 左右に移動する
 function sideMove() {
   if( this.right() > canvas.width) {
     // canvasの右側に到達
@@ -317,6 +328,7 @@ function sideMove() {
   this.y += this.vy * this.dt;
 }
 
+// キャンバスの枠を移動する
 function squareMove() {
   if( this.right() > canvas.width) {
     // canvasの右側に到達
@@ -346,12 +358,17 @@ function squareMove() {
   this.y += this.vy;
 }
 
+// プレイヤーを追跡するように移動する
 function chaseMove() {
+  // プレイヤーのX座標とモンスターのX座標の差を計算
   var dx = player.x - this.x;
+  // プレイヤーのY座標とモンスターのY座標の差を計算
   var dy = player.y - this.y;
+  // 三平方の定理に基づいて、距離を計算
   var distance = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
-  
+  // X軸の差を距離で割って、X方向の移動距離を計算
   this.vx = dx / distance;
+  // Y軸の差を距離で割って、Y方向の移動距離を計算
   this.vy = dy / distance;
   
   this.x += this.vx * this.dt;
@@ -361,7 +378,7 @@ function chaseMove() {
 </head>
 <body>
 <div id="container">
-  <h1>アクションゲーム</h1>
+  <h1>コイン集めゲーム</h1>
   <div id="scoreBox"><span id="scoreLabel">スコア</span><span id="score">0</span></div>
   <div id="message"></div>
   <canvas id="canvas" width="500px" height="500px"></canvas><br>
