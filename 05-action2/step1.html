@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>コイン集めゲーム</title>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" type="text/css" href="style.css">
+<script>
+var canvas;
+var ctx;
+var timer;
+var messageTag = null;
+// スコア表示用タグ
+var scoreTag = null;
+// スコア
+var score = 0;
+// スタートからの通算フレーム数を保持する変数
+var frame = 0;
+// 画像
+var images = ['robot6.png','coin.png','enemy01.png','enemy02.png','enemy03.png','robot4.png',];
+var imageContainer = {};
+
+// 画像の幅
+var IMAGE_WIDTH = 50;
+// 画像の高さ
+var IMAGE_HEIGHT = 50;
+
+// プレイヤーの座標情報
+var player = {};
+// プレイヤーの初期化データ
+var player_data = {};
+// 敵を保持する配列
+var enemies = [];
+// 敵の初期化データ
+var enemy_data1 = {};
+var enemy_data2 = {};
+var enemy_data3 = {};
+
+// コインの配列
+var coins = [];
+// 作成できるコインの最大数
+var max_coin = 5;
+
+window.onload = init;
+window.onkeydown = keyDown;
+
+var createData = function () {
+  player_data = {
+    "image" : imageContainer['robot4.png'],
+    "x" : canvas.width - IMAGE_WIDTH,
+    "y" : 0,
+    "vx" : 25,
+    "vy" : 25,
+    "dt" : 1,
+  };
+  enemy_data1 = {
+    "image" : imageContainer['enemy01.png'],
+    "x" : 0,
+    "y" : 0,
+    "vx" : 2.5,
+    "vy" : 2.5,
+    "dt" : 1,
+    "move" : chaseMove,
+  };
+  enemy_data2 = {
+    "image" : imageContainer['enemy02.png'],
+    "x" : 0,
+    "y" : canvas.height - IMAGE_HEIGHT,
+    "vx" : 2.5,
+    "vy" : 2.5,
+    "dt" : 5,
+    "move" : squareMove,
+  };
+  enemy_data3 = {
+    "image" : imageContainer['enemy03.png'],
+    "x" : canvas.width - IMAGE_WIDTH,
+    "y" : canvas.height - IMAGE_HEIGHT,
+    "vx" : 5,
+    "vy" : 2.5,
+    "dt" : 1,
+    "move" : sideMove,
+  };
+};
+
+function getRandom(min, max) {
+  var randomValue = Math.floor(Math.random() * (max-min+1)) + min;
+  return randomValue;
+}
+
+function init() {
+  initContext();
+  prepareImages();
+  createData();
+  var start = document.getElementById('start');
+  start.onclick = startGame;
+}
+
+function initContext () {
+  canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+}
+
+function clearContext() {
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function prepareImages() {
+  var loadedImageCount = 0;
+  for ( var i in images ) {
+    var image = new Image();
+    image.src = './../images/' + images[i];
+    image.onload = function() {
+      loadedImageCount++;
+      if(loadedImageCount == images.length) {
+        initGame();
+      }
+    };
+    imageContainer[images[i]] = image;
+  }
+}
+
+function setMessage(message) {
+  if( messageTag == null ) {
+    messageTag = document.getElementById('message');
+  }
+  messageTag.innerHTML = message;
+}
+
+function setScore(score) {
+  if( scoreTag == null) {
+    scoreTag = document.getElementById('score');
+  }
+  scoreTag.innerHTML = score;
+}
+
+function startGame() {
+  if(timer != null) { return; }
+  initGame();
+  timer = setInterval(draw,30);
+}
+
+function stopTimer() {
+  clearInterval(timer);
+  timer = null;
+}
+
+function keyDown(event) {
+  switch(event.keyCode) {
+    case 37:
+      // 左キーが押された
+      if( player.left() > 0 ) {
+        player.x -= player.vx;
+      }
+      break;
+    case 38:
+      // 上キーが押された
+      if( player.top() > 0 ) {
+        player.y -= player.vy;
+      }
+      break;
+    case 39:
+      // 右キーが押された
+      if( player.right() < canvas.width ) {
+        player.x += player.vx;
+      }
+      break;
+    case 40:
+      // 下キーが押された
+      if( player.bottom() < canvas.height ) {
+        player.y += player.vy;
+      }
+      break;
+  }
+}
+
+function gameOver() {
+  setMessage('残念、もう一度挑戦してみよう');
+  stopTimer();
+}
+
+function Element(data) {
+  this.image = data.image;
+  this.x = data.x;
+  this.y = data.y;
+  this.w = IMAGE_WIDTH;
+  this.h = IMAGE_HEIGHT;
+  this.vx = data.vx;
+  this.vy = data.vy;
+  this.dt = data.dt;
+  if(data.move) {
+    this.move = data.move;
+  }
+}
+Element.prototype.top = function() { return this.y; };
+Element.prototype.bottom = function() { return this.y + this.h; };
+Element.prototype.left = function() { return this.x; };
+Element.prototype.right = function() { return this.x + this.w; };
+Element.prototype.center = function() {
+  var x = this.x + this.w / 2;
+  var y = this.y + this.h / 2;
+  return {"x": x, "y":y};
+};
+Element.prototype.draw = function() {
+  ctx.drawImage(this.image,this.x,this.y,this.w,this.h);
+};
+
+// ここから下にプログラムを作成します
+function initGame() {
+  // フレーム数の初期化
+  frame = 0;
+  // プレイヤーの初期化
+  player = {};
+  // 敵の配列の初期化
+  enemies = [];
+  // コインの初期化
+  coins = [];
+  clearContext();
+  // プレイヤー作成
+  player = new Element(player_data);
+  // 敵の作成
+  enemies.push(new Element(enemy_data1));
+  enemies.push(new Element(enemy_data2));
+  enemies.push(new Element(enemy_data3));
+  // プレイヤ、敵を表示する
+  drawElement();
+  setMessage('');
+  score = 0;
+  setScore(score);
+}
+
+function addCoin() {
+  // 5個以上のコインは作らない
+  if( coins.length >= max_coin) {
+    return;
+  }
+  // 約2秒おきにコインを作成する
+  if(frame % 60 == 0) {
+    var coin_data = {
+      "image" : imageContainer['coin.png'],
+      "x" : getRandom(0, canvas.width-IMAGE_WIDTH),
+      "y" : getRandom(0, canvas.height-IMAGE_HEIGHT),
+    };
+    // コインの作成
+    coins.push(new Element(coin_data));
+  }
+}
+
+function drawElement() {
+  // プレイヤーの表示
+  player.draw();
+  // 敵の表示
+  for(var e in enemies) {
+    enemies[e].draw();
+  }
+  // コインの表示
+  for(var c in coins) {
+    coins[c].draw();
+  }
+}
+
+function draw() {
+  // フレーム数を加算する
+  frame++;
+  clearContext();
+  // コイン追加
+  addCoin();
+  // 敵の移動
+  for(var e in enemies) {
+    enemies[e].move();
+  }
+  // プレイヤー、敵、コインの表示
+  drawElement();
+  // プレイヤーと敵が衝突するとゲームオーバー
+  if(hit(player, enemies) != null) {
+    gameOver();
+    return;
+  }
+  // プレイヤーとコインが衝突するとスコアアップ、コインを消す
+  var index = hit(player, coins);
+  if(index != null) {
+    coins.splice(index,1);
+    score += 10;
+    setScore(score);
+  }
+}
+
+function hit(character, targets) {
+  // 衝突判定
+  var result = null;
+  for(var t in targets) {
+    // キャラクターの中心座標と対象物のX軸の差を計算
+    var dx = character.center()["x"] - targets[t].center()["x"];
+    // キャラクターの中心座標と対象物のY軸の差を計算
+    var dy = character.center()["y"] - targets[t].center()["y"];
+    // 三平方の定理に基づいて距離を計算
+    var distance = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
+    // 距離が40以下であれば衝突と判定
+    if( distance <= 40) {
+      result = t;
+      break;
+    }
+  }
+  // 配列内の衝突した要素のインデックスを返す
+  return result;
+}
+
+// 左右に移動する
+function sideMove() {
+  if( this.right() > canvas.width) {
+    // canvasの右側に到達
+    this.vx = -this.vx;
+  }
+  if( this.left() < 0 ) {
+    // canvasの左側に到達
+    this.vx = -this.vx;
+  }
+  if( this.top() < 0 ) {
+    // canvasの上側に到達
+    this.vy = -this.vy;
+  }
+  if( this.bottom() > canvas.height ) {
+    // canvasの下側に到達
+    this.vy = -this.vy;
+  }
+  this.x += this.vx * this.dt;
+  this.y += this.vy * this.dt;
+}
+
+// キャンバスの枠を移動する
+function squareMove() {
+  if( this.right() > canvas.width) {
+    // canvasの右側に到達
+    this.x = canvas.width - IMAGE_WIDTH;
+    this.vx = 0;
+    this.vy = this.dt;
+  }
+  if( this.left() < 0 ) {
+    // canvasの左側に到達
+    this.x = 0;
+    this.vx = 0;
+    this.vy = -this.dt;
+  }
+  if( this.top() < 0 ) {
+    // canvasの上側に到達
+    this.y =  0;
+    this.vx = this.dt;
+    this.vy = 0;
+  }
+  if( this.bottom() > canvas.height ) {
+    // canvasの下側に到達
+    this.y = canvas.height - IMAGE_HEIGHT;
+    this.vx = -this.dt;
+    this.vy = 0;
+  }
+  this.x += this.vx;
+  this.y += this.vy;
+}
+
+// プレイヤーを追跡するように移動する
+function chaseMove() {
+  // プレイヤーのX座標とモンスターのX座標の差を計算
+  var dx = player.x - this.x;
+  // プレイヤーのY座標とモンスターのY座標の差を計算
+  var dy = player.y - this.y;
+  // 三平方の定理に基づいて、距離を計算
+  var distance = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
+  // X軸の差を距離で割って、X方向の移動距離を計算
+  this.vx = dx / distance;
+  // Y軸の差を距離で割って、Y方向の移動距離を計算
+  this.vy = dy / distance;
+  
+  this.x += this.vx * this.dt;
+  this.y += this.vy * this.dt;
+}
+</script>
+</head>
+<body>
+<div id="container">
+  <h1>コイン集めゲーム</h1>
+  <div id="scoreBox"><span id="scoreLabel">スコア</span><span id="score">0</span></div>
+  <div id="message"></div>
+  <canvas id="canvas" width="500px" height="500px"></canvas><br>
+  <div id="control">
+    <button id="start">スタート</button>
+  </div>
+</div>
+</body>
+</html>
