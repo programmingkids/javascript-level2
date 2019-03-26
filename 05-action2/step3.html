@@ -18,7 +18,7 @@ var score = 0;
 // スタートからの通算フレーム数を保持する変数
 var frame = 0;
 // 画像
-var images = ['robot6.png','coin.png','enemy01.png','enemy02.png','enemy03.png','robot4.png','enemy04.png',];
+var images = ['robot6.png','coin.png','enemy01.png','enemy02.png','enemy03.png','robot4.png','enemy04.png','enemy05.png',];
 var imageContainer = {};
 
 // 画像の幅
@@ -37,6 +37,7 @@ var enemy_data1 = {};
 var enemy_data2 = {};
 var enemy_data3 = {};
 var enemy_data4 = {};
+var enemy_data5 = {};
 
 
 // コインの配列
@@ -91,6 +92,15 @@ var createData = function () {
     "vy" : 2.5,
     "dt" : 1,
     "move" : simpleMove,
+  };
+  enemy_data5 = {
+    "image" : imageContainer['enemy05.png'],
+    "x" : 0,
+    "y" : 0,
+    "vx" : 0,
+    "vy" : 0,
+    "dt" : 1,
+    "move" : randomMove,
   };
 };
 
@@ -235,6 +245,7 @@ function initGame() {
   enemies.push(new Element(enemy_data2));
   enemies.push(new Element(enemy_data3));
   enemies.push(new Element(enemy_data4));
+  enemies.push(new Element(enemy_data5));
   // プレイヤ、敵を表示する
   drawElement();
   setMessage('');
@@ -398,6 +409,14 @@ function simpleMove() {
   }
   this.x += this.vx * this.dt;
   this.y += this.vy * this.dt;
+}
+
+// ランダムな位置に表示される
+function randomMove() {
+  if(frame % 60 == 0 ) {
+    this.x = getRandom(0, canvas.width - IMAGE_WIDTH);
+    this.y = getRandom(0, canvas.height - IMAGE_HEIGHT);
+  }
 }
 </script>
 </head>
